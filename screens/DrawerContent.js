@@ -41,7 +41,7 @@ export function DrawerContent(props){
                                 size={size} />
                             )}
                             label="To-do tasks"
-                            onPress={()=>{props.navigation.navigate("ToDo")}}
+                            onPress={()=>{props.navigation.navigate("HomeScreen")}}
                         />
                         <DrawerItem
                             icon={({color, size}) => (
@@ -51,7 +51,7 @@ export function DrawerContent(props){
                                 size={size} />
                             )}
                             label="Finished tasks"
-                            onPress={()=>{props.navigation.navigate("")}}
+                            onPress={()=>{props.navigation.navigate("CompletedScreen")}}
                         />
                     </Drawer.Section>
                 </View>

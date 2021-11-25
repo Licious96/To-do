@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Data from '../model/Data'
 
-const HomeScreen = ({ navigation }) => {
+const CompletedScreen = ({ navigation }) => {
 
   const [listData, setListData] = useState(
     Data.map((dataItem, index) => ({
@@ -73,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
     return (
       <View style={styles.rowBack}>
         <TouchableOpacity style={[styles.backLeftBtn, styles.backLeftBtnLeft]} onPress={onClose}>
-          <Icon name='check' size={25} color='#fff' />
+          <Icon name='close' size={25} color='#fff' />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={onDelete}>
         <Icon name='trash-can-outline' size={25} color='#fff' />
@@ -112,7 +112,7 @@ const HomeScreen = ({ navigation }) => {
   )
 }
 
-export default HomeScreen
+export default CompletedScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     paddingRight: 17,
   },
   backLeftBtnLeft: {
-    backgroundColor: 'green',
+    backgroundColor: 'blue',
     left: 0,
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
@@ -197,15 +197,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
   },
-  floatingActionBtn: {
-    backgroundColor: "skyblue",
-    width: 55,
-    height:55,
-    position: 'absolute',
-    bottom: 30,
-    right: 30,
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
 });
