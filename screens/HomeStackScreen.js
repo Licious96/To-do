@@ -48,7 +48,6 @@ const HomeStackScreen = ({ navigation }) => {
             <Stack.Screen name="SearchScreen" component={SearchScreen} options={{
                 headerTitle: () => (
                     <TextInput
-                        placeholder="this is placeholder"
                         placeholder="search"
                         placeholderTextColor= 'gray'
                         style={{

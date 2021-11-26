@@ -60,7 +60,6 @@ const HomeScreen = ({ navigation }) => {
   const renderItem = (data, rowMap) => {
     return (
         <VisibleItem data={data} />
-      
     )
   }
 
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   floatingActionBtn: {
-    backgroundColor: "skyblue",
+    backgroundColor: "#009387",
     width: 55,
     height:55,
     position: 'absolute',

@@ -1,10 +1,16 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {View, StyleSheet, ScrollView,} from 'react-native'
 import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer'
 import { Avatar, Title, Paragraph, Caption, Drawer, Text, TouchableRipple, Switch} from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export function DrawerContent(props){
+export default function DrawerContent(props){
+
+    const logout = async() => {
+        await AsyncStorage.removeItem('@user_id')
+        props.navigation.navigate("HomeStack", {screen: 'Login'})
+    }
     return (
         <View style={{flex: 1}}>
             <DrawerContentScrollView {...props}>
@@ -65,7 +71,7 @@ export function DrawerContent(props){
                         size={size} />
                     )}
                     label="SignOut"
-                    onPress={()=>{}}
+                    onPress={logout}
                 />
             </Drawer.Section>
         </View>
