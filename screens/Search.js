@@ -9,9 +9,30 @@ import {
   TextInput
 } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const Search = () => {
-    const [text, onChangeText] = useState("")
+    const [text, setText] = useState("")
+    const [user_id, setUser_id] = useState(null)
+    const [results, setResults] = useState([])
+
+    useEffect(async () => {
+        const user_id = await AsyncStorage.getItem("user_id")
+        setUser_id(user_id)
+    }, [user_id])
+
+    const search = async () => {
+
+        const formData = new FormData()
+        formData.append('title', text)
+        try {
+            const res = await axios.post(`http://127.0.0.1:8000/api/search/${user_id}`, formData)
+            setResults(res.data)
+        } catch (error) {
+            console.log(error.response.data)
+        }
+    }
 
     return (
         <View >
@@ -20,12 +41,38 @@ const Search = () => {
                     <Icon name='arrow-left' size={20} color='#000' />
                 </TouchableOpacity>
                 <View style={styles.seachBarInputView}>
-                    <TextInput onChangeText={onChangeText} value={text} style={styles.seachBarInput} />
+                    <TextInput onChangeText={setText} value={text} style={styles.seachBarInput} />
                 </View>
-                <TouchableOpacity style={styles.seachBarSend}>
+                <TouchableOpacity style={styles.seachBarSend} onPress={search}>
                     <Icon name='send' size={20} color='#000' />
                 </TouchableOpacity>
             </View>
+
+            {
+                (() => {
+                    if (results.length !== 0) {
+                        return (
+                            results.map(items => (
+                                <View style={styles.rowFront}>
+                                    <TouchableOpacity style={styles.rowFrontVisible}>
+                                        <View>
+                                            <Text style={styles.title}>{items.title}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>
+                            ))
+                        )
+                    } else {
+                        return (
+                            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                                <Text style={styles.title}>Could not find {text}</Text>
+                            </View>
+                        )
+                    }
+                })()
+                
+            }
+
         </View>
     )
 }
@@ -71,5 +118,30 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'center',
         flex: 1,
-    }
+    },
+    rowFront: {
+        backgroundColor: '#FFF',
+        borderRadius: 5,
+        height: 60,
+        margin: 5,
+        marginBottom: 15,
+        shadowColor: '#999',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5,
+    },
+    rowFrontVisible: {
+        backgroundColor: '#FFF',
+        borderRadius: 5,
+        height: 60,
+        padding: 10,
+        marginBottom: 15,
+    },
+    title: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        margin: 5,
+        color: '#666',
+    },
 })

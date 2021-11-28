@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,143 +11,152 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import { Constants } from 'expo-constants';
-import {useTheme} from 'react-native-paper';
-
+import { useTheme } from 'react-native-paper';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const EditProfileScreen = () => {
+const EditProfileScreen = ({route}) => {
 
-  const [image, setImage] = useState('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png');
-  const {colors} = useTheme();
+  let {userObj} = route.params
 
-  useEffect( async()=>{
+  const [image, setImage] = useState(userObj.image);
+  const { colors } = useTheme();
+  const [user_id, setUser_id] = useState()
+  const [f_name, setF_name] = useState(userObj.f_name)
+  const [l_name, setL_name] = useState(userObj.l_name)
+  const [errors, setErrors] = useState([])
+
+  useEffect(async () => {
+    const user_id = await AsyncStorage.getItem("user_id")
+    setUser_id(user_id)
+  }, [user_id])
+
+  useEffect(async () => {
     if (Platform.OS !== 'web') {
-        const {status} = await ImagePicker.requestMediaLibraryPermissionsAsync()
-        if (status !== 'granted') {
-            alert("Permission denied!")
-        }
-
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+      if (status !== 'granted') {
+        alert("Permission denied!")
+      }
     }
   }, [])
 
-  const PickImage = async () => {
-      let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [4,3],
-          quality: 1
-      })
+  useEffect(async () => {
+    try {
+      const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+      setUser(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [user_id])
 
-      if (!result.cancelled) {
-          setImage(result.uri)
+  const PickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    })
+    if (!result.cancelled) {
+      if (result.width > 1200) {
+        
       }
+      setImage(result.uri)
+    }
+
+    console.log(result)
   }
+
+  const update = async () => {
+
+    const formData = new FormData()
+    formData.append('image', image)
+    formData.append('f_name', f_name)
+    formData.append('l_name', l_name)
+
+    try {
+      const res = await axios.post(`http://localhost:8000/api/update_user/${user_id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      console.log(res.data)
+    } catch (error) {
+      setErrors(error.response.data)
+    }
+  }
+
+
 
   return (
     <SafeAreaView style={styles.container}>
 
-        <View style={{alignItems: 'center', marginBottom: 25}}>
-          <TouchableOpacity onPress={PickImage}>
-            <View
-              style={{
-                height: 100,
-                width: 100,
-                borderRadius: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <ImageBackground
-                source={{
-                  uri: image,
-                }}
-                style={{height: 100, width: 100}}
-                imageStyle={{borderRadius: 15}}>
-                <View
+      <View style={{ alignItems: 'center', marginBottom: 25 }}>
+        <TouchableOpacity onPress={PickImage}>
+          <View
+            style={{
+              height: 100,
+              width: 100,
+              borderRadius: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ImageBackground
+              source={{
+                uri: image !== null ? image : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
+              }}
+              style={{ height: 100, width: 100 }}
+              imageStyle={{ borderRadius: 15 }}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Icon
+                  name="camera"
+                  size={35}
+                  color="#fff"
                   style={{
-                    flex: 1,
-                    justifyContent: 'center',
+                    opacity: 0.7,
                     alignItems: 'center',
-                  }}>
-                  <Icon
-                    name="camera"
-                    size={35}
-                    color="#fff"
-                    style={{
-                      opacity: 0.7,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderWidth: 1,
-                      borderColor: '#fff',
-                      borderRadius: 10,
-                    }}
-                  />
-                </View>
-              </ImageBackground>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.action}>
-          <FontAwesome name="user-o" color={colors.text} size={20} />
-          <TextInput
-            placeholder="First Name"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <FontAwesome name="user-o" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Last Name"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <FontAwesome name="envelope-o" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="#666666"
-            keyboardType="email-address"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <Icon name="lock-outline" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
-          <Text style={styles.panelButtonTitle}>Save</Text>
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: '#fff',
+                    borderRadius: 10,
+                  }}
+                />
+              </View>
+            </ImageBackground>
+          </View>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.action}>
+        <FontAwesome name="user-o" color={colors.text} size={20} />
+        <TextInput onChangeText={(text) => setF_name(text)} placeholder="First Name" placeholderTextColor="#666666" defaultValue={userObj.f_name}
+          style={[
+            styles.textInput,
+            {
+              color: colors.text,
+            },
+          ]}
+        />
+      </View>
+      {errors?.f_name ? <Text style={styles.errorMsg}>{errors.f_name}</Text> : null}
+
+      <View style={styles.action}>
+        <FontAwesome name="user-o" color={colors.text} size={20} />
+        <TextInput onChangeText={(text) => setL_name(text)} placeholder="Last Name" placeholderTextColor="#666666" defaultValue={userObj.l_name}
+          style={[
+            styles.textInput,
+            {
+              color: colors.text,
+            },
+          ]}
+        />
+      </View>
+      {errors?.l_name ? <Text style={styles.errorMsg}>{errors.l_name}</Text> : null}
+      <TouchableOpacity style={styles.commandButton} onPress={update}>
+        <Text style={styles.panelButtonTitle}>Save</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -162,7 +171,7 @@ const styles = StyleSheet.create({
   commandButton: {
     padding: 15,
     borderRadius: 10,
-    backgroundColor: '#FF6347',
+    backgroundColor: '#08d4c4',
     alignItems: 'center',
     marginTop: 10,
   },
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
   action: {
     flexDirection: 'row',
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 0,
     borderBottomWidth: 1,
     borderBottomColor: '#f2f2f2',
     paddingBottom: 5,
@@ -184,5 +193,10 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
     color: '#05375a',
+  },
+  errorMsg: {
+    color: '#FF0000',
+    fontSize: 14,
+    marginBottom: 10,
   },
 });

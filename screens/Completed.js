@@ -7,66 +7,83 @@ import {
   TouchableOpacity,
   Button,
   TouchableHighlight,
-  StatusBar, 
-  Modal
+  StatusBar
 } from "react-native";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Data from '../model/Data'
+import axios from 'axios';
 
 const CompletedScreen = ({ navigation }) => {
 
-  const [listData, setListData] = useState(
-    Data.map((dataItem, index) => ({
-      key: `${index}`,
-      title: dataItem.title,
-      details: dataItem.details
-    }))
-  )
-  
-  const closeRow = (rowMap, rowKey) => {
-    if (rowMap[rowKey]) {
-      rowMap[rowKey].closeRow()
+  const [user_id, setUser_id] = useState(null)
+  const [data, setData] = useState([])
+
+  useEffect(async () => {
+    const user_id = await AsyncStorage.getItem("user_id")
+    setUser_id(user_id)
+  }, [user_id])
+
+  useEffect(async () => {
+    const res = await axios.get(`http://127.0.0.1:8000/api/fetch_done/${user_id}`)
+
+    if (res.data.length !== 0) {
+      const todoList = res.data.map((dataItem, index) => ({
+        key: `${index}`,
+        id: dataItem.id,
+        title: dataItem.title
+      }))
+
+      setData(todoList)
+    }
+
+  }, [user_id])
+
+  const closeRow = async (rowMap, rowKey, rowId) => {
+
+    try {
+      const res = await axios.post(`http://localhost:8000/api/done/${rowId}`)
+      console.log(res.data)
+      setData(data.filter(item => item.id !== rowId))
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  const deleteRow = (rowMap, rowKey) => {
-    closeRow(rowMap, rowKey)
-    const newData = [...listData]
-    const prevIndex = listData.findIndex(item => item.key === rowKey)
-    newData.splice(prevIndex, 1)
-    setListData(newData)
-  }
-
-  const editRow = (rowMap, rowKey) => {
-    console.log("Edit row")
+  const deleteRow = async(rowMap, rowKey, rowId) => {
+    try {
+      const res = await axios.delete(`http://localhost:8000/api/destroy/${rowId}`)
+      console.log(res.data)
+      setData(data.filter(item => item.id !== rowId))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const VisibleItem = props => {
-    const {data} = props
+    const { data } = props
     return (
-        <View style={styles.rowFront}>
-          <TouchableOpacity style={styles.rowFrontVisible} onPress={()=> navigation.navigate("EditTask")}>
-            <View>
-              <Text style={styles.title} numberOfLines={1}>{data.item.title}</Text>
-              <Text style={styles.details} numberOfLines={1}>{data.item.details}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.rowFront}>
+        <TouchableOpacity style={styles.rowFrontVisible} onPress={() => navigation.navigate("EditTask", { item: data.item })}>
+          <View>
+            <Text style={styles.title} numberOfLines={1}>{data.item.title}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     )
   }
 
   const renderItem = (data, rowMap) => {
     return (
-        <VisibleItem data={data} />
-      
+      <VisibleItem data={data} />
     )
   }
 
   const HiddenItemWithAction = props => {
     const {
-      onClose, 
+      onClose,
       onDelete,
     } = props
 
@@ -76,7 +93,7 @@ const CompletedScreen = ({ navigation }) => {
           <Icon name='close' size={25} color='#fff' />
         </TouchableOpacity>
         <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={onDelete}>
-        <Icon name='trash-can-outline' size={25} color='#fff' />
+          <Icon name='trash-can-outline' size={25} color='#fff' />
         </TouchableOpacity>
       </View>
 
@@ -88,27 +105,26 @@ const CompletedScreen = ({ navigation }) => {
       <HiddenItemWithAction
         data={data}
         rowMap={rowMap}
-        onClose={()=> closeRow(rowMap, data.item.key)}
-        onDelete={()=> deleteRow(rowMap, data.item.key)}
+        onClose={() => closeRow(rowMap, data.item.key, data.item.id)}
+        onDelete={() => deleteRow(rowMap, data.item.key, data.item.id)}
       />
     )
   }
 
   return (
-      <View style={styles.container}>
-        <SwipeListView
-          useFlatList
-          data={listData}
-          renderItem={renderItem}
-          renderHiddenItem={renderHiddenItem}
-          leftOpenValue={70}
-          rightOpenValue={-70}
-        ></SwipeListView>
+    <View style={styles.container}>
+      <SwipeListView
+        data={data}
+        renderItem={renderItem}
+        renderHiddenItem={renderHiddenItem}
+        leftOpenValue={70}
+        rightOpenValue={-70}
+      ></SwipeListView>
 
-        <TouchableOpacity style={styles.floatingActionBtn} onPress={()=> navigation.navigate("AddTask")}>
-          <Icon name="plus" size={25} color="#fff" />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate("AddTask")}>
+        <Icon name="plus" size={25} color="#fff" />
+      </TouchableOpacity>
+    </View>
   )
 }
 

@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { 
     View, 
     Text, 
@@ -26,6 +26,13 @@ const Login = ({navigation}) => {
     const [errors, setErrors] = useState({})
     const { manifest } = Constants
 
+    useEffect(async()=>{
+        const user_id = await AsyncStorage.getItem("user_id")
+        if (user_id !== null) {
+            navigation.navigate('DrawerStack');
+        }
+    },[])
+
     const loginHandle = async() => {
 
         //const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
@@ -34,13 +41,10 @@ const Login = ({navigation}) => {
         formData.append('email', email)
         formData.append('password', password)
 
-        // axios.post(`${url}/login`, formData)
-        // .then(res => console.log(res.data))
-        // .catch(err => console.log(err.response.data))
-
        try {
            const res = await axios.post(`http://127.0.0.1:8000/api/login`, formData)
-           await AsyncStorage.setItem('@user_id', JSON.stringify(res.data.id))
+           await AsyncStorage.setItem('user_id', res.data.id)
+           navigation.navigate("DrawerStack")
        } catch (error) {
            setErrors(error.response.data)
        }

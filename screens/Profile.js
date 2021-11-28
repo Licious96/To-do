@@ -1,16 +1,32 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, SafeAreaView, StyleSheet } from 'react-native';
-import {
-    Avatar,
-    Title,
-    Caption,
-    Text,
-    TouchableRipple,
-} from 'react-native-paper';
+import { Avatar, Title,  Caption, Text, TouchableRipple } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Profile = ({ navigation }) => {
+
+    const [user_id, setUser_id] = useState('')
+    const [user, setUser] = useState([])
+
+    useEffect(async () => {
+        const id = await AsyncStorage.getItem("user_id")
+        if (user_id !== null) {
+            setUser_id(id)
+        }
+    }, [user_id])
+
+    useEffect(async () => {
+        try {
+            const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+            setUser(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }, [user_id])
+
     return (
         <SafeAreaView style={styles.container}>
 
@@ -18,7 +34,7 @@ const Profile = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
                     <Avatar.Image
                         source={{
-                            uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
+                            uri: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
                         }}
                         size={80}
                     />
@@ -26,31 +42,19 @@ const Profile = ({ navigation }) => {
                         <Title style={[styles.title, {
                             marginTop: 30,
                             marginBottom: 5,
-                        }]}>Leago Diale</Title>
+                        }]}>{user.f_name} {user.l_name}</Title>
                     </View>
                 </View>
             </View>
 
             <View style={styles.userDetails}>
-                <TouchableRipple onPress={() => { }}>
-                    <View style={styles.userItem}>
-                        <Icon name="account" color="#777777" size={25} />
-                        <Text style={styles.userItemText}>Leago</Text>
-                    </View>
-                </TouchableRipple>
-                <TouchableRipple onPress={() => { }}>
-                    <View style={styles.userItem}>
-                        <Icon name="account" color="#777777" size={25} />
-                        <Text style={styles.userItemText}>Diale</Text>
-                    </View>
-                </TouchableRipple>
-                <TouchableRipple onPress={() => { }}>
+                <TouchableRipple >
                     <View style={styles.userItem}>
                         <Icon name="email" color="#777777" size={25} />
-                        <Text style={styles.userItemText}>mputitleago@gmail.com</Text>
+                        <Text style={styles.userItemText}>{user.email}</Text>
                     </View>
                 </TouchableRipple>
-                <TouchableRipple onPress={() => { }}>
+                <TouchableRipple >
                     <View style={styles.userItem}>
                         <Icon name="lock" color="#777777" size={25} />
                         <Text style={styles.userItemText}>********</Text>

@@ -17,6 +17,7 @@ class CreateTodosTable extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('title');
+            $table->boolean('done')->default(0);
             $table->timestamps();
         });
     }

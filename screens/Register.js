@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useState, useEffect } from 'react';
 import { 
     View, 
     Text, 
@@ -20,6 +20,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = ({navigation}) => {
 
+    useEffect(async()=>{
+        const user_id = await AsyncStorage.getItem("user_id")
+        if (user_id !== null) {
+            navigation.navigate('DrawerStack');
+        }
+    },[])
+
     const [f_name, setF_name] = useState('')
     const [l_name, setL_name] = useState('')
     const [email, setEmail] = useState('')
@@ -38,7 +45,8 @@ const SignInScreen = ({navigation}) => {
 
         try {
             const res = await axios.post("http://127.0.0.1:8000/api/register", formData)
-            //console.log(res.data)
+            await AsyncStorage.setItem('user_id', res.data.id)
+            navigation.navigate("DrawerStack")
         } catch (error) {
             setErrors1(error.response.data)
         }

@@ -1,16 +1,38 @@
 import React, {useEffect, useState} from "react";
-import {View, StyleSheet, ScrollView,} from 'react-native'
+import {View, StyleSheet, ScrollView} from 'react-native'
 import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer'
 import { Avatar, Title, Paragraph, Caption, Drawer, Text, TouchableRipple, Switch} from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
 
 export default function DrawerContent(props){
 
+    const [user_id, setUser_id] = useState('')
+    const [user, setUser] = useState([])
+
+    useEffect(async () => {
+        const id = await AsyncStorage.getItem("user_id")
+        if (user_id !== null) {
+            setUser_id(id)
+        }
+    },[user_id])
+
+    useEffect(async() => {
+        try {
+            const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+            setUser(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    },[user_id])
+
     const logout = async() => {
-        await AsyncStorage.removeItem('@user_id')
-        props.navigation.navigate("HomeStack", {screen: 'Login'})
+        await AsyncStorage.removeItem('user_id')
+        props.navigation.navigate("Login", {screen: 'Login'})
     }
+
+    
     return (
         <View style={{flex: 1}}>
             <DrawerContentScrollView {...props}>
@@ -19,12 +41,12 @@ export default function DrawerContent(props){
                         <View style={styles.profileSection}>
                             <Avatar.Image 
                                 source={{
-                                    uri: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vectorstock.com%2Froyalty-free-vector%2Fuser-sign-icon-person-symbol-human-avatar-vector-12693195&psig=AOvVaw2btvymkJ_Oli0oEmJrti5H&ust=1637772513093000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMjZ55j4rvQCFQAAAAAdAAAAABAJ"
+                                    uri: user.image !== null ? user.image : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
                                 }}
                                 size={70}
                             />
                             <View>
-                                <Title style={styles.title}>Leago Diale</Title>
+                                <Title style={styles.title}>{user.f_name} {user.l_name}</Title>
                             </View>
                         </View>
                     </View>
@@ -37,7 +59,7 @@ export default function DrawerContent(props){
                                 size={size} />
                             )}
                             label="Profile"
-                            onPress={()=>{props.navigation.navigate("ProfileStack")}}
+                            onPress={()=>{ props.navigation.navigate("EditProfile", {userObj: user})}}
                         />
                         <DrawerItem
                             icon={({color, size}) => (

@@ -8,6 +8,7 @@ import SearchScreen from "./Search";
 import AddTask from "./AddTask";
 import EditTask from "./EditTask";
 import CompletedScreen from "./Completed";
+import EditProfileScreen from "./EditProfile";
 
 const Stack = createStackNavigator()
 
@@ -64,17 +65,18 @@ const HomeStackScreen = ({ navigation }) => {
                 ),
                 headerRight: () => (
                     <Icon.Button 
-                        name="close" 
+                        name="magnify" 
                         size={25}
                         color="#000"
                         backgroundColor="#fff"
-                        onPress={() => navigation.navigate("SearchScreen")}
+                        onPress={() => alert()}
                     ></Icon.Button>
                 )
         }}/>
             <Stack.Screen name="AddTask" component={AddTask} options={{title: "Add task"}}/>
             <Stack.Screen name="EditTask" component={EditTask} options={{title: "Edit task"}}/>
             <Stack.Screen name="CompletedScreen" component={CompletedScreen} options={{title: "Completed tasks"}}/>
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: "Edit Profile" }} />
         </Stack.Navigator>
     )
 }

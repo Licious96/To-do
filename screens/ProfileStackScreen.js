@@ -17,17 +17,6 @@ const ProfileStackScreen = ({ navigation }) => {
             },
 
         }}>
-            <Stack.Screen name="Profile" component={ProfileScreen}  options={{
-                headerRight: () => (
-                    <Icon.Button 
-                        name="account-edit" 
-                        size={25}
-                        color="#000"
-                        backgroundColor="#fff"
-                        onPress={() => navigation.navigate("EditProfile")}
-                    ></Icon.Button>
-                )
-        }}/>
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         </Stack.Navigator>
     )

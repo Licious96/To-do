@@ -9,16 +9,18 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function register(Request $request){
-        
+    public function register(Request $request)
+    {
+
         $fields = Validator::make(
             $request->all(),
             [
                 'f_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
                 'l_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required|string|confirmed'
-            ]);
+                'password' => 'required|string|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'
+            ]
+        );
 
         if ($fields->fails()) {
             return response()->json($fields->errors(), 400);
@@ -34,15 +36,17 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
-    public function login(Request $request){
-        
+    public function login(Request $request)
+    {
+
         $fields = Validator::make(
             $request->all(),
             [
                 'email' => 'required',
                 'password' => 'required'
-            ]);
-        
+            ]
+        );
+
         if ($fields->fails()) {
             return response()->json($fields->errors(), 400);
         }
@@ -50,25 +54,36 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request['password'], $user->password)) {
-            return response()->json(['msg'=>'You have entered wrong Email/Password, please check and try again'], 401);
+            return response()->json(['msg' => 'You have entered wrong Email/Password, please check and try again'], 401);
         }
 
         return response()->json($user, 200);
     }
 
-    public function update(Request $request, $id){
+    public function get_user($id){
+        return response()->json(User::find($id), 200);
+    }
 
-        $request->validate([
-            'f_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
-            'l_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
-            'password' => 'required|string'
-        ]);
+    public function update(Request $request, $id)
+    {
+        $fields = Validator::make(
+            $request->all(),
+            [
+                'f_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
+                'l_name' => 'required|string|regex:/(^([a-zA-Z]+)(\d+)?$)/u',
+                'image' => 'required',
+            ]
+        );
+
+        if ($fields->fails()) {
+            return response()->json($fields->errors(), 400);
+        }
 
         $user = User::find($id);
 
         $user->f_name = $request->f_name;
         $user->l_name = $request->l_name;
-        $user->password = $request->password;
+        $user->image = $request->image;
         $user->save();
 
         return response()->json($user, 201);
