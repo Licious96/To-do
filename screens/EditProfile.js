@@ -7,7 +7,8 @@ import {
   TextInput,
   StyleSheet,
   SafeAreaView,
-  Platform
+  Platform,
+  ToastAndroid
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
 import { Constants } from 'expo-constants';
@@ -16,14 +17,17 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 
 const EditProfileScreen = ({route}) => {
 
   let {userObj} = route.params
+  const isFocused = useIsFocused()
 
   const [image, setImage] = useState(userObj.image);
   const { colors } = useTheme();
   const [user_id, setUser_id] = useState()
+  const [user, setUser] = useState([])
   const [f_name, setF_name] = useState(userObj.f_name)
   const [l_name, setL_name] = useState(userObj.l_name)
   const [errors, setErrors] = useState([])
@@ -59,13 +63,8 @@ const EditProfileScreen = ({route}) => {
       quality: 1
     })
     if (!result.cancelled) {
-      if (result.width > 1200) {
-        
-      }
       setImage(result.uri)
     }
-
-    console.log(result)
   }
 
   const update = async () => {
@@ -77,7 +76,7 @@ const EditProfileScreen = ({route}) => {
 
     try {
       const res = await axios.post(`http://localhost:8000/api/update_user/${user_id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-      console.log(res.data)
+      ToastAndroid.show("Your profile was updated", ToastAndroid.SHORT);
     } catch (error) {
       setErrors(error.response.data)
     }

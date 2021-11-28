@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const Search = () => {
+const Search = ({navigation}) => {
     const [text, setText] = useState("")
     const [user_id, setUser_id] = useState(null)
     const [results, setResults] = useState([])
@@ -38,13 +38,13 @@ const Search = () => {
         <View >
             <View style={styles.seachBar}>
                 <TouchableOpacity style={styles.seachBarBack}>
-                    <Icon name='arrow-left' size={20} color='#000' />
+                    <Icon name='arrow-left' size={20} color='#000' onPress={()=>navigation.navigate("HomeScreen")}/>
                 </TouchableOpacity>
                 <View style={styles.seachBarInputView}>
-                    <TextInput onChangeText={setText} value={text} style={styles.seachBarInput} />
+                    <TextInput onChangeText={setText} onKeyPress={search} value={text} style={styles.seachBarInput} />
                 </View>
-                <TouchableOpacity style={styles.seachBarSend} onPress={search}>
-                    <Icon name='send' size={20} color='#000' />
+                <TouchableOpacity style={styles.seachBarSend} onPress={()=> setText("")}>
+                    <Icon name='close' size={20} color='#000' />
                 </TouchableOpacity>
             </View>
 
@@ -62,7 +62,8 @@ const Search = () => {
                                 </View>
                             ))
                         )
-                    } else {
+                    } 
+                    if(text) {
                         return (
                             <View style={{justifyContent: 'center', alignItems: 'center'}}>
                                 <Text style={styles.title}>Could not find {text}</Text>

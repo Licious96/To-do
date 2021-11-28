@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   Button,
   TouchableHighlight,
-  StatusBar
+  StatusBar,
+  ToastAndroid
 } from "react-native";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 
 const HomeScreen = ({ navigation }) => {
@@ -25,7 +26,9 @@ const HomeScreen = ({ navigation }) => {
     setUser_id(user_id)
   }, [user_id])
 
-  useEffect(async () => {
+  useFocusEffect(
+    React.useCallback(async () => {
+    
     const res = await axios.get(`http://127.0.0.1:8000/api/fetch_todo/${user_id}`)
 
     if (res.data.length !== 0) {
@@ -38,13 +41,16 @@ const HomeScreen = ({ navigation }) => {
       setData(todoList)
     }
 
-  },[user_id])
+  }, [user_id]))
+
+  
 
   const closeRow = async(rowMap, rowKey, rowId) => {
     
     try {
       const res = await axios.post(`http://localhost:8000/api/done/${rowId}`)
       setData(data.filter(item => item.id !== rowId))
+      ToastAndroid.show("Item moved to completed tasks", ToastAndroid.SHORT);
     } catch (error) {
       console.log(error)
     }
@@ -54,8 +60,8 @@ const HomeScreen = ({ navigation }) => {
 
     try {
       const res = await axios.delete(`http://localhost:8000/api/destroy/${rowId}`)
-      console.log(res.data)
       setData(data.filter(item => item.id !== rowId))
+      ToastAndroid.show("Item deleted", ToastAndroid.SHORT);
     } catch (error) {
       console.log(error)
     }

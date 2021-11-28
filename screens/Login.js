@@ -6,8 +6,7 @@ import {
     TextInput,
     Platform,
     StyleSheet ,
-    StatusBar,
-    Alert
+    StatusBar
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import { LinearGradient } from 'expo-linear-gradient';

@@ -5,9 +5,7 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  Button,
-  TouchableHighlight,
-  StatusBar
+  ToastAndroid
 } from "react-native";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -47,6 +45,7 @@ const CompletedScreen = ({ navigation }) => {
       const res = await axios.post(`http://localhost:8000/api/done/${rowId}`)
       console.log(res.data)
       setData(data.filter(item => item.id !== rowId))
+      ToastAndroid.show("Item removed from completed tasks", ToastAndroid.SHORT);
     } catch (error) {
       console.log(error)
     }
@@ -55,8 +54,8 @@ const CompletedScreen = ({ navigation }) => {
   const deleteRow = async(rowMap, rowKey, rowId) => {
     try {
       const res = await axios.delete(`http://localhost:8000/api/destroy/${rowId}`)
-      console.log(res.data)
       setData(data.filter(item => item.id !== rowId))
+      ToastAndroid.show("Deleted", ToastAndroid.SHORT);
     } catch (error) {
       console.log(error)
     }

@@ -21,7 +21,7 @@ const AddTask = ({navigation, route}) => {
             const formData = new FormData()
             formData.append('title', text)
             const res = await axios.post(`http://127.0.0.1:8000/api/create/${user_id}`, formData)
-            Alert.alert('Add task', 'Task added', [{text: 'OK'}])
+            ToastAndroid.show("New task added", ToastAndroid.SHORT);
             navigation.navigate("HomeScreen")
         } catch (error) {
             setError(error.response.data)

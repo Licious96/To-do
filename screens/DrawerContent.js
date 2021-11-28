@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {View, StyleSheet, ScrollView} from 'react-native'
 import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer'
-import { Avatar, Title, Paragraph, Caption, Drawer, Text, TouchableRipple, Switch} from 'react-native-paper'
+import { Avatar, Title, Paragraph, Caption, Drawer, Text, TouchableRipple} from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 import axios from "axios";
 
 export default function DrawerContent(props){
 
     const [user_id, setUser_id] = useState('')
     const [user, setUser] = useState([])
+    const isFocused = useIsFocused();
 
     useEffect(async () => {
         const id = await AsyncStorage.getItem("user_id")
@@ -18,14 +20,14 @@ export default function DrawerContent(props){
         }
     },[user_id])
 
-    useEffect(async() => {
+    useEffect(async () => {
         try {
             const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
             setUser(res.data)
         } catch (error) {
             console.log(error)
         }
-    },[user_id])
+    }, [user_id])
 
     const logout = async() => {
         await AsyncStorage.removeItem('user_id')

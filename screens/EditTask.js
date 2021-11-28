@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, {useState} from 'react'
-import { View, TextInput, Button, Text } from 'react-native'
+import { View, TextInput, Button, Text, ToastAndroid } from 'react-native'
 
 const EditTask = ({route, navigation}) => {
 
@@ -14,6 +14,7 @@ const EditTask = ({route, navigation}) => {
             const formData = new FormData()
             formData.append('title', text)
             const res = await axios.post(`http://127.0.0.1:8000/api/update/${item.id}`, formData)
+            //ToastAndroid.show("Task edited", ToastAndroid.SHORT);
             navigation.goBack()
         } catch (error) {
             setError(error.response.data)
