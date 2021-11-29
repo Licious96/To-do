@@ -15,21 +15,25 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
 const HomeScreen = ({ navigation }) => {
 
   const [user_id, setUser_id] = useState(null)
   const [data, setData] = useState([])
+  const { manifest } = Constants
+  const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
   useEffect(async () => {
-    const user_id = await AsyncStorage.getItem("user_id")
-    setUser_id(user_id)
+    const user_id = await AsyncStorage.getItem("@user_id")
+    const id = JSON.parse(user_id)
+    setUser_id(id)
   }, [user_id])
 
   useFocusEffect(
     React.useCallback(async () => {
     
-    const res = await axios.get(`http://127.0.0.1:8000/api/fetch_todo/${user_id}`)
+    const res = await axios.get(`${url}/fetch_todo/${user_id}`)
 
     if (res.data.length !== 0) {
       const todoList = res.data.map((dataItem, index) => ({
@@ -37,7 +41,6 @@ const HomeScreen = ({ navigation }) => {
         id: dataItem.id,
         title: dataItem.title
       }))
-
       setData(todoList)
     }
 
@@ -48,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
   const closeRow = async(rowMap, rowKey, rowId) => {
     
     try {
-      const res = await axios.post(`http://localhost:8000/api/done/${rowId}`)
+      const res = await axios.post(`${url}/done/${rowId}`)
       setData(data.filter(item => item.id !== rowId))
       ToastAndroid.show("Item moved to completed tasks", ToastAndroid.SHORT);
     } catch (error) {
@@ -59,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
   const deleteRow = async(rowMap, rowKey, rowId) => {
 
     try {
-      const res = await axios.delete(`http://localhost:8000/api/destroy/${rowId}`)
+      const res = await axios.delete(`${url}/destroy/${rowId}`)
       setData(data.filter(item => item.id !== rowId))
       ToastAndroid.show("Item deleted", ToastAndroid.SHORT);
     } catch (error) {

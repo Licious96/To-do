@@ -9,9 +9,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Drawer = createDrawerNavigator()
 const DrawerStack = ({navigation}) => {
 
+
     useEffect(async()=>{
-        const user_id = await AsyncStorage.getItem("user_id")
-        if (user_id == null) {
+        const user_idd = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_idd)
+        if (id == null) {
             navigation.navigate('Login', { screen: 'Login' });
         }
     },[])

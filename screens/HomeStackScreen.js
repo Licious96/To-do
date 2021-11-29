@@ -47,6 +47,7 @@ const HomeStackScreen = ({ navigation }) => {
                 )
         }}/>
             <Stack.Screen name="SearchScreen" component={SearchScreen} options={{
+                headerShown: false,
                 // headerTitle: () => (
                 //     <TextInput
                 //         placeholder="search"

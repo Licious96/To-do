@@ -1,19 +1,22 @@
 import axios from 'axios'
 import React, {useState} from 'react'
 import { View, TextInput, Button, Text, ToastAndroid } from 'react-native'
+import Constants from 'expo-constants'
 
 const EditTask = ({route, navigation}) => {
 
     let {item} = route.params
     const [text, setText] = useState(item.title)
     const [error, setError] = useState([])
+    const { manifest } = Constants
+    const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
     const edit_task = async() => {
 
         try {
             const formData = new FormData()
             formData.append('title', text)
-            const res = await axios.post(`http://127.0.0.1:8000/api/update/${item.id}`, formData)
+            const res = await axios.post(`${url}/update/${item.id}`, formData)
             ToastAndroid.show("Task edited", ToastAndroid.SHORT);
             navigation.goBack()
         } catch (error) {

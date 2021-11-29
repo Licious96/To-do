@@ -17,12 +17,14 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 const SignInScreen = ({navigation}) => {
 
     useEffect(async()=>{
-        const user_id = await AsyncStorage.getItem("user_id")
-        if (user_id !== null) {
+        const user_idd = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_idd)
+        if (id !== null) {
             navigation.navigate('DrawerStack');
         }
     },[])
@@ -35,7 +37,7 @@ const SignInScreen = ({navigation}) => {
     const [errors1, setErrors1] = useState({})
 
     const register = async() => {
-
+        const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
         const formData = new FormData()
         formData.append('f_name', f_name)
         formData.append('l_name', l_name)
@@ -44,7 +46,7 @@ const SignInScreen = ({navigation}) => {
         formData.append('password_confirmation', password_confirmation)
 
         try {
-            const res = await axios.post("http://127.0.0.1:8000/api/register", formData)
+            const res = await axios.post(`${url}/register`, formData)
             await AsyncStorage.setItem('user_id', res.data.id)
             navigation.navigate("DrawerStack")
         } catch (error) {

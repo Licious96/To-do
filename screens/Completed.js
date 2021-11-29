@@ -10,22 +10,25 @@ import {
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Data from '../model/Data'
+import Constants from 'expo-constants';
 import axios from 'axios';
 
 const CompletedScreen = ({ navigation }) => {
 
   const [user_id, setUser_id] = useState(null)
   const [data, setData] = useState([])
+  const { manifest } = Constants
+  const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
   useEffect(async () => {
-    const user_id = await AsyncStorage.getItem("user_id")
-    setUser_id(user_id)
+    const user_id = await AsyncStorage.getItem("@user_id")
+    const id = JSON.parse(user_id)
+    setUser_id(id)
   }, [user_id])
 
   useEffect(async () => {
-    const res = await axios.get(`http://127.0.0.1:8000/api/fetch_done/${user_id}`)
+    
+    const res = await axios.get(`${url}/fetch_done/${user_id}`)
 
     if (res.data.length !== 0) {
       const todoList = res.data.map((dataItem, index) => ({
@@ -42,7 +45,7 @@ const CompletedScreen = ({ navigation }) => {
   const closeRow = async (rowMap, rowKey, rowId) => {
 
     try {
-      const res = await axios.post(`http://localhost:8000/api/done/${rowId}`)
+      const res = await axios.post(`${url}/done/${rowId}`)
       console.log(res.data)
       setData(data.filter(item => item.id !== rowId))
       ToastAndroid.show("Item removed from completed tasks", ToastAndroid.SHORT);
@@ -53,7 +56,7 @@ const CompletedScreen = ({ navigation }) => {
 
   const deleteRow = async(rowMap, rowKey, rowId) => {
     try {
-      const res = await axios.delete(`http://localhost:8000/api/destroy/${rowId}`)
+      const res = await axios.delete(`${url}/destroy/${rowId}`)
       setData(data.filter(item => item.id !== rowId))
       ToastAndroid.show("Deleted", ToastAndroid.SHORT);
     } catch (error) {

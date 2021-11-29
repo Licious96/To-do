@@ -26,23 +26,24 @@ const Login = ({navigation}) => {
     const { manifest } = Constants
 
     useEffect(async()=>{
-        const user_id = await AsyncStorage.getItem("user_id")
-        if (user_id !== null) {
+        const user_idd = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_idd)
+        if (id !== null) {
             navigation.navigate('DrawerStack');
         }
     },[])
 
     const loginHandle = async() => {
 
-        //const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
+        const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
         
         const formData = new FormData()
         formData.append('email', email)
         formData.append('password', password)
 
        try {
-           const res = await axios.post(`http://127.0.0.1:8000/api/login`, formData)
-           await AsyncStorage.setItem('user_id', res.data.id)
+           const res = await axios.post(`${url}/login`, formData)
+           await AsyncStorage.setItem('@user_id', JSON.stringify(res.data.id))
            navigation.navigate("DrawerStack")
        } catch (error) {
            setErrors(error.response.data)

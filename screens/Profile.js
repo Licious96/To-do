@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { View, SafeAreaView, StyleSheet } from 'react-native';
 import { Avatar, Title,  Caption, Text, TouchableRipple } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import axios from "axios";
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -10,17 +11,21 @@ const Profile = ({ navigation }) => {
 
     const [user_id, setUser_id] = useState('')
     const [user, setUser] = useState([])
+    const { manifest } = Constants
 
     useEffect(async () => {
-        const id = await AsyncStorage.getItem("user_id")
-        if (user_id !== null) {
+        const user_idd = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_idd)
+        if (id !== null) {
             setUser_id(id)
         }
     }, [user_id])
 
     useEffect(async () => {
+
+        const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+            const res = await axios.get(`${url}/get_user/${user_id}`)
             setUser(res.data)
         } catch (error) {
             console.log(error)

@@ -6,23 +6,29 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 import axios from "axios";
+import Constants from 'expo-constants';
 
 export default function DrawerContent(props){
 
     const [user_id, setUser_id] = useState('')
     const [user, setUser] = useState([])
     const isFocused = useIsFocused();
+    const { manifest } = Constants
+    const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
     useEffect(async () => {
-        const id = await AsyncStorage.getItem("user_id")
+        const user_idd = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_idd)
         if (user_id !== null) {
             setUser_id(id)
         }
     },[user_id])
 
+
+
     useEffect(async () => {
         try {
-            const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+            const res = await axios.get(`${url}/get_user/${user_id}`)
             setUser(res.data)
         } catch (error) {
             console.log(error)

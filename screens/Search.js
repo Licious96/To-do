@@ -11,23 +11,26 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
 const Search = ({navigation}) => {
     const [text, setText] = useState("")
     const [user_id, setUser_id] = useState(null)
     const [results, setResults] = useState([])
+    const { manifest } = Constants
 
     useEffect(async () => {
-        const user_id = await AsyncStorage.getItem("user_id")
-        setUser_id(user_id)
+        const user_id = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_id)
+        setUser_id(id)
     }, [user_id])
 
     const search = async () => {
-
+        const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
         const formData = new FormData()
         formData.append('title', text)
         try {
-            const res = await axios.post(`http://127.0.0.1:8000/api/search/${user_id}`, formData)
+            const res = await axios.post(`${url}/search/${user_id}`, formData)
             setResults(res.data)
         } catch (error) {
             console.log(error.response.data)
@@ -35,7 +38,7 @@ const Search = ({navigation}) => {
     }
 
     return (
-        <View >
+        <View style={{flex: 1}}>
             <View style={styles.seachBar}>
                 <TouchableOpacity style={styles.seachBarBack}>
                     <Icon name='arrow-left' size={20} color='#000' onPress={()=>navigation.navigate("HomeScreen")}/>
@@ -84,7 +87,6 @@ const styles = StyleSheet.create({
     seachBar: {
         alignItems: 'center',
         backgroundColor: '#fff',
-        flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingLeft: 15,
@@ -92,7 +94,6 @@ const styles = StyleSheet.create({
         margin: 5,
         marginBottom: 15,
         borderRadius: 5,
-        height: 150
     },
     seachBarBack: {
         alignItems: 'flex-start',
@@ -110,8 +111,8 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: '#DDD',
         color: "#000",
-        padding: 10,
-        fontSize: 20,
+        paddingHorizontal: 5,
+        fontSize: 15,
         fontFamily: 'Roboto',
         borderRadius: 10
     },

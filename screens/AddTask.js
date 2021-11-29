@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { View, TextInput, Button, Text, Alert, ToastAndroid } from 'react-native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 const AddTask = ({navigation, route}) => {
 
@@ -9,18 +10,21 @@ const AddTask = ({navigation, route}) => {
     const [user_id, setUser_id] = useState(null)
     const [error, setError] = useState([])
     const [visible, setVisible] = useState(false)
+    const { manifest } = Constants
 
     useEffect(async () => {
-        const user_id = await AsyncStorage.getItem("user_id")
-        setUser_id(user_id)
+        const user_id = await AsyncStorage.getItem("@user_id")
+        const id = JSON.parse(user_id)
+        setUser_id(id)
     }, [user_id])
 
     const add_task = async () => {
-        
+
+        const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
         try {
             const formData = new FormData()
             formData.append('title', text)
-            const res = await axios.post(`http://127.0.0.1:8000/api/create/${user_id}`, formData)
+            const res = await axios.post(`${url}/create/${user_id}`, formData)
             ToastAndroid.show("New task added", ToastAndroid.SHORT);
             navigation.navigate("HomeScreen")
         } catch (error) {

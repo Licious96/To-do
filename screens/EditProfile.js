@@ -11,18 +11,17 @@ import {
   ToastAndroid
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'
-import { Constants } from 'expo-constants';
 import { useTheme } from 'react-native-paper';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import Constants from 'expo-constants';
 
-const EditProfileScreen = ({route}) => {
+const EditProfileScreen = ({route, navigation}) => {
 
   let {userObj} = route.params
-  const isFocused = useIsFocused()
 
   const [image, setImage] = useState(userObj.image);
   const { colors } = useTheme();
@@ -31,10 +30,13 @@ const EditProfileScreen = ({route}) => {
   const [f_name, setF_name] = useState(userObj.f_name)
   const [l_name, setL_name] = useState(userObj.l_name)
   const [errors, setErrors] = useState([])
+  const { manifest } = Constants
+  const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
   useEffect(async () => {
-    const user_id = await AsyncStorage.getItem("user_id")
-    setUser_id(user_id)
+    const user_idd = await AsyncStorage.getItem("@user_id")
+    const id = JSON.parse(user_idd)
+    setUser_id(id)
   }, [user_id])
 
   useEffect(async () => {
@@ -48,7 +50,7 @@ const EditProfileScreen = ({route}) => {
 
   useEffect(async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/get_user/${user_id}`)
+      const res = await axios.get(`${url}/get_user/${user_id}`)
       setUser(res.data)
     } catch (error) {
       console.log(error)
@@ -75,7 +77,8 @@ const EditProfileScreen = ({route}) => {
     formData.append('l_name', l_name)
 
     try {
-      const res = await axios.post(`http://localhost:8000/api/update_user/${user_id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      const res = await axios.post(`${url}/update_user/${user_id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      navigation.navigate("HomeScreen")
       ToastAndroid.show("Your profile was updated", ToastAndroid.SHORT);
     } catch (error) {
       setErrors(error.response.data)
