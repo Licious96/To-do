@@ -55,6 +55,7 @@
 - open the project folder with your ide and open the terminal on your ide, altrnatively you can use your computer command prompt and direct to the project folder
 - on your terminal, run 'npm install' to install the required node modules.
 - now run 'npm start' to start the react project
+- create a database in your server interface admin and name it 'todo'
 - now change directory to api folder
 - run 'composer install' to install the required modules
 - rename the .env.example file to .env
