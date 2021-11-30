@@ -31,22 +31,27 @@ const HomeScreen = ({ navigation }) => {
   }, [user_id])
 
   useFocusEffect(
-    React.useCallback(async () => {
-    
-    const res = await axios.get(`${url}/fetch_todo/${user_id}`)
+    React.useCallback(() => {
+      const fetchUser = async () => {
+        try {
+          const res = await axios.get(`${url}/fetch_todo/${user_id}`)
 
-    if (res.data.length !== 0) {
-      const todoList = res.data.map((dataItem, index) => ({
-        key: `${index}`,
-        id: dataItem.id,
-        title: dataItem.title
-      }))
-      setData(todoList)
-    }
+          if (res.data.length !== 0) {
+            const todoList = res.data.map((dataItem, index) => ({
+              key: `${index}`,
+              id: dataItem.id,
+              title: dataItem.title
+            }))
+            setData(todoList)
+          }
+        } catch (e) {
+          console.log(e)
+        }
+      };
+      fetchUser();
+    }, [user_id])
+  );
 
-  }, [user_id]))
-
-  
 
   const closeRow = async(rowMap, rowKey, rowId) => {
     
@@ -90,6 +95,15 @@ const HomeScreen = ({ navigation }) => {
     )
   }
 
+  const empty = () => {
+    return (
+      <View style={styles.emptyContainer}>
+        <Icon name="clipboard-list-outline" size={80} color="#666" />
+        <Text style={styles.text}>To-do list is empty, please add tasks</Text>
+      </View>
+    )
+  }
+
   const HiddenItemWithAction = props => {
     const {
       onClose,
@@ -128,7 +142,7 @@ const HomeScreen = ({ navigation }) => {
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={70}
         rightOpenValue={-70}
-        ListEmptyComponent={()=><View style={{justifyContent: 'center', alignItems: 'center', textAlign: "center"}}><Text>Empty</Text></View>}
+        ListEmptyComponent={empty}
       ></SwipeListView>
 
       <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate("AddTask")}>
@@ -233,5 +247,17 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyContainer: {
+    marginTop: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  text: {
+    color: '#666',
+    fontSize: 25,
+    marginHorizontal: 25,
+    textAlign: 'center'
   }
 });

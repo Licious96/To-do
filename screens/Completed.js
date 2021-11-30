@@ -46,7 +46,6 @@ const CompletedScreen = ({ navigation }) => {
 
     try {
       const res = await axios.post(`${url}/done/${rowId}`)
-      console.log(res.data)
       setData(data.filter(item => item.id !== rowId))
       ToastAndroid.show("Item removed from completed tasks", ToastAndroid.SHORT);
     } catch (error) {
@@ -80,6 +79,15 @@ const CompletedScreen = ({ navigation }) => {
   const renderItem = (data, rowMap) => {
     return (
       <VisibleItem data={data} />
+    )
+  }
+
+  const empty = () => {
+    return (
+      <View style={styles.emptyContainer}>
+        <Icon name="clipboard-list-outline" size={80} color="#666" />
+        <Text style={styles.text}>No task has been marked as completed</Text>
+      </View>
     )
   }
 
@@ -121,6 +129,7 @@ const CompletedScreen = ({ navigation }) => {
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={70}
         rightOpenValue={-70}
+        ListEmptyComponent={empty}
       ></SwipeListView>
 
       <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate("AddTask")}>
@@ -215,4 +224,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
   },
+  emptyContainer: {
+    marginTop: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  text: {
+    color: '#666',
+    fontSize: 25,
+    marginHorizontal: 25,
+    textAlign: 'center'
+  }
 });

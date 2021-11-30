@@ -26,16 +26,13 @@ export default function DrawerContent(props){
 
     const get_data = async() => {
         try {
+            console.log('running')
             const res = await axios.get(`${url}/get_user/${user_id}`)
             setUser(res.data)
         } catch (error) {
             console.log(error)
         }
     }
-
-    useEffect(() => {
-        get_data()
-    })
 
     if (status == 'open') {
         get_data()
