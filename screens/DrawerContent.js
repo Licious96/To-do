@@ -4,7 +4,6 @@ import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer'
 import { Avatar, Title, Paragraph, Caption, Drawer, Text, TouchableRipple} from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 import axios from "axios";
 import Constants from 'expo-constants';
 import { useDrawerStatus } from '@react-navigation/drawer';
@@ -12,12 +11,8 @@ import { useDrawerStatus } from '@react-navigation/drawer';
 export default function DrawerContent(props){
 
     const status = useDrawerStatus()
-
-    
-
     const [user_id, setUser_id] = useState('')
     const [user, setUser] = useState([])
-    const isFocused = useIsFocused();
     const { manifest } = Constants
     const url = `http://${manifest.debuggerHost.split(':').shift().concat(':8000')}/api`
 
@@ -38,18 +33,13 @@ export default function DrawerContent(props){
         }
     }
 
+    useEffect(() => {
+        get_data()
+    })
+
     if (status == 'open') {
         get_data()
     }
-
-    useEffect(async () => {
-        try {
-            const res = await axios.get(`${url}/get_user/${user_id}`)
-            setUser(res.data)
-        } catch (error) {
-            console.log(error)
-        }
-    }, [user_id])
 
     const logout = async() => {
         await AsyncStorage.removeItem('@user_id')
