@@ -52,7 +52,7 @@ export default function DrawerContent(props){
     }, [user_id])
 
     const logout = async() => {
-        await AsyncStorage.removeItem('user_id')
+        await AsyncStorage.removeItem('@user_id')
         props.navigation.navigate("Login", {screen: 'Login'})
     }
     
