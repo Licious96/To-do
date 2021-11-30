@@ -55,10 +55,10 @@ const Search = ({navigation}) => {
                 (() => {
                     if (results.length !== 0) {
                         return (
-                            results.map(items => (
-                                <View style={styles.rowFront}>
+                            results.map((items, index) => (
+                                <View style={styles.rowFront} key={index}>
                                     <TouchableOpacity style={styles.rowFrontVisible}>
-                                        <View>
+                                        <View >
                                             <Text style={styles.title}>{items.title}</Text>
                                         </View>
                                     </TouchableOpacity>
