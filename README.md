@@ -63,5 +63,5 @@
 - in our case we will be using posgresql so add your pqsql to your database name, postgres as your username and the password that you have choosen
 - on your terminal run 'php artisan key:generate'.
 - migrate your tables by running 'php artisan migrate'.
-- now start the project by running 'php artisan serve'.
+- now start the project by running 'php artisan serve --host=your_computer_ip_address'.
 - Your project should be up and running now
