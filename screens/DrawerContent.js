@@ -7,8 +7,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect, useIsFocused  } from '@react-navigation/native';
 import axios from "axios";
 import Constants from 'expo-constants';
+import { useDrawerStatus } from '@react-navigation/drawer';
 
 export default function DrawerContent(props){
+
+    const status = useDrawerStatus()
+
+    
 
     const [user_id, setUser_id] = useState('')
     const [user, setUser] = useState([])
@@ -24,7 +29,18 @@ export default function DrawerContent(props){
         }
     },[user_id])
 
+    const get_data = async() => {
+        try {
+            const res = await axios.get(`${url}/get_user/${user_id}`)
+            setUser(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
+    if (status == 'open') {
+        get_data()
+    }
 
     useEffect(async () => {
         try {
@@ -39,7 +55,6 @@ export default function DrawerContent(props){
         await AsyncStorage.removeItem('user_id')
         props.navigation.navigate("Login", {screen: 'Login'})
     }
-
     
     return (
         <View style={{flex: 1}}>

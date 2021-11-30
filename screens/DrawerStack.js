@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import { createDrawerNavigator  } from '@react-navigation/drawer'
 
 import HomeStack from './HomeStackScreen'
 import ProfileStack from './ProfileStackScreen'
@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator()
 const DrawerStack = ({navigation}) => {
-
 
     useEffect(async()=>{
         const user_idd = await AsyncStorage.getItem("@user_id")

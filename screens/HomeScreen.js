@@ -128,6 +128,7 @@ const HomeScreen = ({ navigation }) => {
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={70}
         rightOpenValue={-70}
+        ListEmptyComponent={()=><View style={{justifyContent: 'center', alignItems: 'center', textAlign: "center"}}><Text>Empty</Text></View>}
       ></SwipeListView>
 
       <TouchableOpacity style={styles.floatingActionBtn} onPress={() => navigation.navigate("AddTask")}>
