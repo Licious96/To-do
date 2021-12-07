@@ -60,7 +60,7 @@
 - run 'composer install' to install the required modules
 - rename the .env.example file to .env
 - now add your database, username and password in the correct specified fields in the .env file
-- in our case we will be using posgresql so add your pqsql to your database name, postgres as your username and the password that you have choosen
+- in our case we will be using mysql so add mysql to your database name, root as your username and the password that you have choosen, by default there's no password
 - on your terminal run 'php artisan key:generate'.
 - migrate your tables by running 'php artisan migrate'.
 - now start the project by running 'php artisan serve --host=your_computer_ip_address'.
